@@ -2,7 +2,7 @@ import rsa
 import socket
 import threading
 
-public_key, private_key = rsa.newkeys(1024)
+public_key, private_key = rsa.newkeys(1024)  # 1024 bit keys size
 public_partner = None
 
 choice = input("Do you want to host[1] or to connect[2]?: ")
@@ -13,7 +13,7 @@ if choice == "1":
     server.bind((ip_address, 9999))
     server.listen()
 
-    print("Server is listening...")
+    print("Server is running...")
 
     client, _ = server.accept()
     client.send(public_key.save_pkcs1("PEM"))
