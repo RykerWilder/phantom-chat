@@ -3,10 +3,11 @@ import socket
 import threading
 
 choice = input("Do you want to host[1] or to connect[2]?: ")
+ip_address = "192.168.3.149"
 
 if choice == "1":
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("192.168.3.149", 9999))
+    server.bind((ip_address, 9999))
     server.listen()
 
     print("Server is listening...")
@@ -14,7 +15,7 @@ if choice == "1":
     client, _ = server.accept()
 elif choice == "2":
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("192.168.3.149", 9999))
+    client.connect((ip_address, 9999))
     print("Connected successfully!")
 else:
     print("Invalid choice, retry")
