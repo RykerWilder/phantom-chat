@@ -1,3 +1,4 @@
+from colorama import Fore, Style
 import rsa
 import socket
 import threading
@@ -53,7 +54,7 @@ def sending_messages(client, public_partner):
 
             # EXIT
             if message.lower() == "/exit":
-                print("Disconnecting in progress...")
+                print("Disconnection in progress...")
                 break
                 
             # SEND ENCRYPTED MESSAGE
@@ -61,7 +62,7 @@ def sending_messages(client, public_partner):
             client.send(encrypted_message)
             print(f"You: {message}")
     except Exception as e:
-        print(f"Error sending message: {e}")
+        print(f"{Fore.RED}Error sending message: {e}{Style.RESET_ALL}")
     finally:
         # Close connection
         client.close()
