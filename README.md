@@ -8,6 +8,7 @@ This is a peer-to-peer (P2P) chat application that uses 1024-bit RSA encryption 
 
 - Python 3.x
 - rsa library
+- colorama library
 
 ---
 
@@ -22,7 +23,7 @@ python3 -m venv venv
 ```bash
 source venv/bin/activate
 ```
-4. Install Dependencies:
+4. Install dependencies:
 ```bash
-pip install rsa
+pip install -r requirements.txt
 ```
