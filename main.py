@@ -8,30 +8,30 @@ def create_host(ip_addr, port, public_key):
     try:
         server.bind((ip_addr, port))
         server.listen()
-        print(f"server listening on {ip_addr}:{port}")
+        print(f"Server listening on {ip_addr}:{port}")
         
         client, client_address = server.accept()
-        print(f"connection established with {client_address[0]}:{client_address[1]}")
+        print(f"Connection established with {client_address[0]}:{client_address[1]}")
         
         # Invio della chiave pubblica
         client.send(public_key.save_pkcs1("PEM"))
         
         # Ricezione della chiave pubblica del partner
         public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-        print("keys exchange completed")
+        print("Keys exchange completed")
         
         return client, public_partner
     except Exception as e:
-        print(f"error creating server {e}")
+        print(f"Error creating server {e}")
         sys.exit(1)
 
 def create_connection(ip_addr, port, public_key):
 
-    print(f"attempting to connect to {ip_addr}:{port}...")
+    print(f"Attempting to connect to {ip_addr}:{port}...")
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         client.connect((ip_addr, port))
-        print("connection established")
+        print("Connection established")
         
         # Invio della chiave pubblica
         client.send(public_key.save_pkcs1("PEM"))
@@ -42,7 +42,7 @@ def create_connection(ip_addr, port, public_key):
         
         return client, public_partner
     except Exception as e:
-        print(f"error while connecting {e}")
+        print(f"Error while connecting {e}")
         sys.exit(1)
 
 def sending_messages(client, public_partner):
@@ -53,7 +53,7 @@ def sending_messages(client, public_partner):
 
             # EXIT
             if message.lower() == "/exit":
-                print("disconnecting in progress...")
+                print("Disconnecting in progress...")
                 break
                 
             # SEND ENCRYPTED MESSAGE
@@ -61,7 +61,7 @@ def sending_messages(client, public_partner):
             client.send(encrypted_message)
             print(f"You: {message}")
     except Exception as e:
-        print(f"error sending message: {e}")
+        print(f"Error sending message: {e}")
     finally:
         # Close connection
         client.close()
@@ -80,7 +80,7 @@ def receiving_messages(client, private_key):
             message = rsa.decrypt(encrypted_message, private_key).decode()
             print(f"Partner: {message}")
     except Exception as e:
-        print(f"error receiving message: {e}")
+        print(f"Error receiving message: {e}")
     finally:
         # CLOSE CONNECTION
         client.close()
