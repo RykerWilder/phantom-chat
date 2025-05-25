@@ -9,7 +9,7 @@ def create_host(ip_addr, port, public_key):
     try:
         server.bind((ip_addr, port))
         server.listen()
-        print(f"Server listening on {ip_addr}:{port}")
+        print(f"Server listening on {Fore.GREEN}{ip_addr}:{port}{Style.RESET_ALL}")
         
         client, client_address = server.accept()
         print(f"Connection established with {client_address[0]}:{client_address[1]}")
@@ -39,11 +39,11 @@ def create_connection(ip_addr, port, public_key):
         
         # Ricezione della chiave pubblica del partner
         public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-        print("keys exchange completed")
+        print("Keys exchange completed")
         
         return client, public_partner
     except Exception as e:
-        print(f"Error while connecting {e}")
+        print(f"{Fore.RED}Error while connecting {e}{Style.RESET_ALL}")
         sys.exit(1)
 
 def sending_messages(client, public_partner):
@@ -60,7 +60,7 @@ def sending_messages(client, public_partner):
             # SEND ENCRYPTED MESSAGE
             encrypted_message = rsa.encrypt(message.encode(), public_partner)
             client.send(encrypted_message)
-            print(f"You: {message}")
+            print(f"{Fore.YELLOW}You{Style.RESET_ALL}: {message}")
     except Exception as e:
         print(f"{Fore.RED}Error sending message: {e}{Style.RESET_ALL}")
     finally:
@@ -75,13 +75,13 @@ def receiving_messages(client, private_key):
             # RECEIVE AND DECRYPT MESSAGE
             encrypted_message = client.recv(1024)
             if not encrypted_message:
-                print("Partner disconnected.")
+                print(f"{Fore.RED}Partner disconnected.{Style.RESET_ALL}")
                 break
                 
             message = rsa.decrypt(encrypted_message, private_key).decode()
-            print(f"Partner: {message}")
+            print(f"{Fore.BLUE}Partner{Style.RESET_ALL}: {message}")
     except Exception as e:
-        print(f"Error receiving message: {e}")
+        print(f"{Fore.RED}Error receiving message: {e}{Style.RESET_ALL}")
     finally:
         # CLOSE CONNECTION
         client.close()
@@ -100,10 +100,10 @@ def main():
     ip_address = input(f"Insert the IP address (default: {default_ip}): ") or default_ip
     
     while True:
-        choice = input("Choose the mod: Host [1] o Client [2]? ")
+        choice = input("Choose the mod: Host [1] or Client [2]: ")
         if choice in ["1", "2"]:
             break
-        print("Invalid choice")
+        print(f"{Fore.RED}Invalid choice{Style.RESET_ALL}")
     
     # START CONNECTION
     if choice == "1":
@@ -111,7 +111,7 @@ def main():
     else:
         client, public_partner = create_connection(ip_address, PORT, public_key)
     
-    print("Connection established! Digit \"/exit\" to exit.")
+    print(f"{Fore.GREEN}Connection established! Digit {Fore.YELLOW}\"/exit\"{Style.RESET_ALL}{Fore.GREEN} to exit.{Style.RESET_ALL}")
     
     # SENDING AND RECEIVING
     send_thread = threading.Thread(target=sending_messages, args=(client, public_partner))
@@ -127,7 +127,7 @@ def main():
         send_thread.join()
         receive_thread.join()
     except KeyboardInterrupt:
-        print("Forced closure program.")
+        print(f"{Fore.RED}Forced closure program.{Style.RESET_ALL}")
         sys.exit(0)
 
 if __name__ == "__main__":
