@@ -12,14 +12,12 @@ def create_host(ip_addr, port, public_key):
         print(f"Server listening on {Fore.GREEN}{ip_addr}:{port}{Style.RESET_ALL}")
         
         client, client_address = server.accept()
-        print(f"Connection established with {client_address[0]}:{client_address[1]}")
         
         # Invio della chiave pubblica
         client.send(public_key.save_pkcs1("PEM"))
         
         # Ricezione della chiave pubblica del partner
         public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-        print("Keys exchange completed")
         
         return client, public_partner
     except Exception as e:
@@ -28,16 +26,14 @@ def create_host(ip_addr, port, public_key):
 
 def create_connection(ip_addr, port, public_key):
 
-    print(f"Attempting to connect to {ip_addr}:{port}...")
+    print(f"Attempting to connect to {Fore.YELLOW}{ip_addr}:{port}{Style.RESET_ALL}...")
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         client.connect((ip_addr, port))
-        print("Connection established")
         
         # Invio della chiave pubblica
         client.send(public_key.save_pkcs1("PEM"))
         
-        # Ricezione della chiave pubblica del partner
         public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
         print("Keys exchange completed")
         
@@ -91,8 +87,7 @@ def main():
 
     PORT = 9999
     
-    # GENERATE KEYS
-    print("RSA keys generation...")
+    # KEYS GENERATION
     public_key, private_key = rsa.newkeys(1024)
     
     # IP ADDRESS
