@@ -1,8 +1,10 @@
 from colorama import Fore, Style
 from phantom_chat.modules import P2P
+from phantom_chat.utils import print_welcome_message
 import threading
 
 def main():
+    print_welcome_message()
 
     print(f"""
         [{Fore.BLUE}1{Style.RESET_ALL}] P2P
