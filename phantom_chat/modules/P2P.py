@@ -11,9 +11,7 @@ class P2P:
 
     # IP ADDRESS
     port = 9999
-    default_ip = "192.168.1.38"
-    ip_address = input(f"Insert the IP address (default: {default_ip}): ") or default_ip
-
+    ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE} {Style.RESET_ALL}")
     while True:
         choiceP2P = input("Choose the mod: Host [1] or Client [2]: ")
         if choiceP2P in ["1", "2"]:
