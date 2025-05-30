@@ -7,8 +7,7 @@ This is a peer-to-peer (P2P) chat application that uses 1024-bit RSA encryption 
 ## Requirements
 
 - Python 3.x
-- rsa library
-- colorama library
+
 
 ---
 
