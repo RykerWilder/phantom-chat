@@ -10,6 +10,7 @@ def get_local_ip():
         return ip
     except Exception:
         return "127.0.0.1"  # Fallback a localhost
+        
 
 def print_welcome_message():
     print(r""" 
