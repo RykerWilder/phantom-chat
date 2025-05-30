@@ -7,28 +7,31 @@ import sys
 
 class P2P:
 
-    # KEYS GENERATION
-    public_key, private_key = rsa.newkeys(1024)
+    def P2P_manager(self):
+        # KEYS GENERATION
+        public_key, private_key = rsa.newkeys(1024)
 
-    # IP ADDRESS
-    port = 9999
-    ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
-    while True:
-        choiceP2P = input("Choose the mod: Host [1] or Client [2]: ")
-        if choiceP2P in ["1", "2"]:
-            break
-        print(f"{Fore.RED}Invalid choice{Style.RESET_ALL}")
+        # IP ADDRESS
+        default_port = 9999
+        ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
+        port = int(input(f"{Fore.GREEN}[?]Insert port (default: 9999) => {Style.RESET_ALL}") or default_port)
 
-    # START CONNECTION
-    if choiceP2P == "1":
-        client, public_partner = self.create_host(ip_address, port, public_key)
-    else:
-        client, public_partner = self.create_connection(ip_address, port, public_key)
+        while True:
+            choiceP2P = input(f"{Fore.GREEN}[?]Choose the mod: Host [1] or Client [2] => {Style.RESET_ALL}")
+            if choiceP2P in ["1", "2"]:
+                break
+            print(f"{Fore.RED}[X]Invalid choice{Style.RESET_ALL}")
 
-    print(f"""
-        {Fore.GREEN}Connection established!{Style.RESET_ALL}
-        {Fore.YELLOW}Digit \"/exit\"{Style.RESET_ALL} to exit.
-    """)
+        # START CONNECTION
+        if choiceP2P == "1":
+            client, public_partner = self.create_host(ip_address, port, public_key)
+        else:
+            client, public_partner = self.create_connection(ip_address, port, public_key)
+
+        print(f"""
+            {Fore.BLUE}[INFO]{Style.RESET_ALL}Connection established!
+            {Fore.YELLOW}[!]Digit \"/exit\" to exit.{Style.RESET_ALL}
+        """)
 
     # SENDING AND RECEIVING
     send_thread = threading.Thread(target=sending_messages, args=(client, public_partner))
@@ -42,24 +45,24 @@ class P2P:
 
 
     def create_host(self, ip_addr, port, public_key):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        server.bind((ip_addr, port))
-        server.listen()
-        print(f"Server listening on {Fore.GREEN}{ip_addr}:{port}{Style.RESET_ALL}")
-        
-        client, client_address = server.accept()
-        
-        # Invio della chiave pubblica
-        client.send(public_key.save_pkcs1("PEM"))
-        
-        # Ricezione della chiave pubblica del partner
-        public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-        
-        return client, public_partner
-    except Exception as e:
-        print(f"Error creating server {e}")
-        sys.exit(1)
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            server.bind((ip_addr, port))
+            server.listen()
+            print(f"Server listening on {Fore.GREEN}{ip_addr}:{port}{Style.RESET_ALL}")
+            
+            client, client_address = server.accept()
+            
+            # Invio della chiave pubblica
+            client.send(public_key.save_pkcs1("PEM"))
+            
+            # Ricezione della chiave pubblica del partner
+            public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
+            
+            return client, public_partner
+        except Exception as e:
+            print(f"Error creating server {e}")
+            sys.exit(1)
 
     def create_connection(self, ip_addr, port, public_key):
 
