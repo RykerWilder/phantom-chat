@@ -14,12 +14,14 @@ def main():
     choice = input(f"{Fore.GREEN}[?] Select your choice => {Style.RESET_ALL}")
 
     if choice == "1":
-        print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose P2P. You can be a host or a client only in your network'")
+        print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose P2P. You can be a host or a client only in your network.")
+        print(f"{Fore.YELLOW}[!] Waiting to connect.{Style.RESET_ALL}")
+
         P2P().P2P_manager()
     elif choice == "2":
         print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose public host.")
     else: 
-        print(f"{Fore.RED}[X] Invalid choice{Style.RESET_ALL}")
+        print(f"{Fore.RED}[X] Invalid choice.{Style.RESET_ALL}")
     
 
 

@@ -22,14 +22,14 @@ class P2P:
         try:
             port = int(input(f"{Fore.GREEN}[?] Insert port (default: {default_port}): {Style.RESET_ALL}") or default_port)
         except ValueError:
-            print(f"{Fore.RED}[X] Invalid port, using default {default_port}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Invalid port. {default_port}{Style.RESET_ALL}")
             port = default_port
 
         while True:
             choice = input(f"{Fore.GREEN}[?] Choose mode - Host [1] or Client [2]: {Style.RESET_ALL}")
             if choice in ("1", "2"):
                 break
-            print(f"{Fore.RED}[X] Invalid choice{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Invalid choice.{Style.RESET_ALL}")
 
         # START CONNECTION
         ip_address = get_local_ip() if choice == "1" else input(f"{Fore.GREEN}[?] Enter host IP: {Style.RESET_ALL}")
@@ -40,7 +40,7 @@ class P2P:
             self.client, self.public_partner = self.create_connection(ip_address, port)
 
         print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection established!")
-        print(f"{Fore.YELLOW}[!] Type '/exit' to quit{Style.RESET_ALL}\n")
+        print(f"{Fore.YELLOW}[!] Type '/exit' to quit.{Style.RESET_ALL}\n")
 
         # START THREAD
         self.start_chat_threads()
@@ -50,10 +50,10 @@ class P2P:
         try:
             server.bind((ip, port))
             server.listen()
-            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Server listening on {Fore.CYAN}{ip}:{port}{Style.RESET_ALL}")
-            
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Server listening on {Fore.CYAN}{ip}:{port}.{Style.RESET_ALL}")
+
             client, addr = server.accept()
-            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection from {Fore.CYAN}{addr[0]}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection from {Fore.CYAN}{addr[0]}.{Style.RESET_ALL}")
             
             # KEYS CHANGE
             client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
@@ -68,7 +68,7 @@ class P2P:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client.connect((ip, port))
-            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connected to {Fore.CYAN}{ip}:{port}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connected to {Fore.CYAN}{ip}:{port}.{Style.RESET_ALL}")
             
             # Scambio chiavi
             client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
@@ -128,12 +128,12 @@ class P2P:
         self.running = False
         if self.client:
             self.client.close()
-        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed")
+        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed.")
         sys.exit(0)
 
 if __name__ == "__main__":
     try:
         p2p = P2P()
     except KeyboardInterrupt:
-        print(f"\n{Fore.RED}[X] Program terminated by user{Style.RESET_ALL}")
+        print(f"\n{Fore.RED}[X] Program terminated by user.{Style.RESET_ALL}")
         sys.exit(0)
