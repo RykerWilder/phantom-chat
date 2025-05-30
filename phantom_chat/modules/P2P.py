@@ -1,124 +1,139 @@
-from colorama import Style, Fore
-from phantom_chat import get_local_ip
+from colorama import Style, Fore, init
+from phantom_chat.utils import get_local_ip
 import rsa
 import socket
 import threading
 import sys
 
 class P2P:
+    def __init__(self):
+        self.public_key, self.private_key = rsa.newkeys(3072)
+        self.client = None
+        self.public_partner = None
+        self.running = True
+        
+        self.p2p_manager()
 
-    def P2P_manager(self):
-        # KEYS GENERATION
-        public_key, private_key = rsa.newkeys(1024)
-
-        # IP ADDRESS
+    def p2p_manager(self):
+        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Your local IP is: {Fore.GREEN}{get_local_ip()}{Style.RESET_ALL}")
+        
+        # Configurazione porta
         default_port = 9999
-        ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
-        port = int(input(f"{Fore.GREEN}[?]Insert port (default: 9999) => {Style.RESET_ALL}") or default_port)
+        try:
+            port = int(input(f"{Fore.GREEN}[?] Insert port (default: {default_port}): {Style.RESET_ALL}") or default_port)
+        except ValueError:
+            print(f"{Fore.RED}[X] Invalid port, using default {default_port}{Style.RESET_ALL}")
+            port = default_port
 
         while True:
-            choiceP2P = input(f"{Fore.GREEN}[?]Choose the mod: Host [1] or Client [2] => {Style.RESET_ALL}")
-            if choiceP2P in ["1", "2"]:
+            choice = input(f"{Fore.GREEN}[?] Choose mode - Host [1] or Client [2]: {Style.RESET_ALL}")
+            if choice in ("1", "2"):
                 break
-            print(f"{Fore.RED}[X]Invalid choice{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Invalid choice{Style.RESET_ALL}")
 
         # START CONNECTION
-        if choiceP2P == "1":
-            client, public_partner = self.create_host(ip_address, port, public_key)
+        ip_address = get_local_ip() if choice == "1" else input(f"{Fore.GREEN}[?] Enter host IP: {Style.RESET_ALL}")
+        
+        if choice == "1":
+            self.client, self.public_partner = self.create_host(ip_address, port)
         else:
-            client, public_partner = self.create_connection(ip_address, port, public_key)
+            self.client, self.public_partner = self.create_connection(ip_address, port)
 
-        print(f"""
-            {Fore.BLUE}[INFO]{Style.RESET_ALL}Connection established!
-            {Fore.YELLOW}[!]Digit \"/exit\" to exit.{Style.RESET_ALL}
-        """)
+        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection established!")
+        print(f"{Fore.YELLOW}[!] Type '/exit' to quit{Style.RESET_ALL}\n")
 
-    # SENDING AND RECEIVING
-    send_thread = threading.Thread(target=sending_messages, args=(client, public_partner))
-    receive_thread = threading.Thread(target=receiving_messages, args=(client, private_key))
+        # START THREAD
+        self.start_chat_threads()
 
-    send_thread.daemon = True
-    receive_thread.daemon = True
-
-    send_thread.start()
-    receive_thread.start()
-
-
-    def create_host(self, ip_addr, port, public_key):
+    def create_host(self, ip, port):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            server.bind((ip_addr, port))
+            server.bind((ip, port))
             server.listen()
-            print(f"Server listening on {Fore.GREEN}{ip_addr}:{port}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Server listening on {Fore.CYAN}{ip}:{port}{Style.RESET_ALL}")
             
-            client, client_address = server.accept()
+            client, addr = server.accept()
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection from {Fore.CYAN}{addr[0]}{Style.RESET_ALL}")
             
-            # Invio della chiave pubblica
-            client.send(public_key.save_pkcs1("PEM"))
+            # KEYS CHANGE
+            client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
+            partner_key = rsa.PublicKey.load_pkcs1(client.recv(1024), "PEM")
             
-            # Ricezione della chiave pubblica del partner
-            public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-            
-            return client, public_partner
+            return client, partner_key
         except Exception as e:
-            print(f"Error creating server {e}")
+            print(f"{Fore.RED}[X] Server error: {e}{Style.RESET_ALL}")
             sys.exit(1)
 
-    def create_connection(self, ip_addr, port, public_key):
-
-        print(f"Attempting to connect to {Fore.YELLOW}{ip_addr}:{port}{Style.RESET_ALL}...")
+    def create_connection(self, ip, port):
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            client.connect((ip_addr, port))
+            client.connect((ip, port))
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connected to {Fore.CYAN}{ip}:{port}{Style.RESET_ALL}")
             
-            # Invio della chiave pubblica
-            client.send(public_key.save_pkcs1("PEM"))
+            # Scambio chiavi
+            client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
+            partner_key = rsa.PublicKey.load_pkcs1(client.recv(1024), "PEM")
             
-            public_partner = rsa.PublicKey.load_pkcs1(client.recv(1024))
-            print("Keys exchange completed")
-            
-            return client, public_partner
+            return client, partner_key
         except Exception as e:
-            print(f"{Fore.RED}Error while connecting {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Connection error: {e}{Style.RESET_ALL}")
             sys.exit(1)
 
-    def sending_messages(self, client, public_partner):
+    def start_chat_threads(self):
+        send_thread = threading.Thread(target=self.send_messages)
+        recv_thread = threading.Thread(target=self.receive_messages)
+        
+        send_thread.daemon = True
+        recv_thread.daemon = True
+        
+        send_thread.start()
+        recv_thread.start()
+        
+        send_thread.join()
+        recv_thread.join()
 
+    def send_messages(self):
         try:
-            while True:
-                message = input("")
-
-                # EXIT
-                if message.lower() == "/exit":
-                    print("Disconnection in progress...")
+            while self.running:
+                msg = input()
+                
+                if msg.lower() == "/exit":
+                    self.running = False
                     break
                     
-                # SEND ENCRYPTED MESSAGE
-                encrypted_message = rsa.encrypt(message.encode(), public_partner)
-                client.send(encrypted_message)
-                print(f"{Fore.YELLOW}You{Style.RESET_ALL}: {message}")
+                encrypted = rsa.encrypt(msg.encode(), self.public_partner)
+                self.client.send(encrypted)
+                print(f"{Fore.YELLOW}You:{Style.RESET_ALL} {msg}")
         except Exception as e:
-            print(f"{Fore.RED}Error sending message: {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Send error: {e}{Style.RESET_ALL}")
         finally:
-            # Close connection
-            client.close()
-            sys.exit(0)
+            self.cleanup()
 
-    def receiving_messages(self, client, private_key):
-
+    def receive_messages(self):
         try:
-            while True:
-                # RECEIVE AND DECRYPT MESSAGE
-                encrypted_message = client.recv(1024)
-                if not encrypted_message:
-                    print(f"{Fore.RED}Partner disconnected.{Style.RESET_ALL}")
+            while self.running:
+                encrypted = self.client.recv(1024)
+                if not encrypted:
                     break
                     
-                message = rsa.decrypt(encrypted_message, private_key).decode()
-                print(f"{Fore.BLUE}Partner{Style.RESET_ALL}: {message}")
+                msg = rsa.decrypt(encrypted, self.private_key).decode()
+                print(f"\n{Fore.BLUE}Partner:{Style.RESET_ALL} {msg}\nYou: ", end="", flush=True)
         except Exception as e:
-            print(f"{Fore.RED}Error receiving message: {e}{Style.RESET_ALL}")
+            if self.running:  # Evita messaggi di errore durante shutdown pulito
+                print(f"{Fore.RED}[X] Receive error: {e}{Style.RESET_ALL}")
         finally:
-            # CLOSE CONNECTION
-            client.close()
-            sys.exit(0)
+            self.cleanup()
+
+    def cleanup(self):
+        self.running = False
+        if self.client:
+            self.client.close()
+        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    try:
+        p2p = P2P()
+    except KeyboardInterrupt:
+        print(f"\n{Fore.RED}[X] Program terminated by user{Style.RESET_ALL}")
+        sys.exit(0)
