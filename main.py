@@ -89,34 +89,19 @@ def main():
     
     # KEYS GENERATION
     public_key, private_key = rsa.newkeys(1024)
-    
-    # IP ADDRESS
-    default_ip = "192.168.1.38"
-    ip_address = input(f"Insert the IP address (default: {default_ip}): ") or default_ip
-    
-    while True:
-        choice = input("Choose the mod: Host [1] or Client [2]: ")
-        if choice in ["1", "2"]:
-            break
-        print(f"{Fore.RED}Invalid choice{Style.RESET_ALL}")
-    
-    # START CONNECTION
+
+    print("""
+        [1] P2P
+        [2] Public host
+    """)
+
+    choice = input(f"{Fore.GREEN}[?]Select your choice => {Style.RESET_ALL}")
+
     if choice == "1":
-        client, public_partner = create_host(ip_address, PORT, public_key)
-    else:
-        client, public_partner = create_connection(ip_address, PORT, public_key)
+        print("[INFO] You choose P2P. You can be a host or a client only in your network")
+        start_P2P()
     
-    print(f"{Fore.GREEN}Connection established! Digit {Fore.YELLOW}\"/exit\"{Style.RESET_ALL}{Fore.GREEN} to exit.{Style.RESET_ALL}")
-    
-    # SENDING AND RECEIVING
-    send_thread = threading.Thread(target=sending_messages, args=(client, public_partner))
-    receive_thread = threading.Thread(target=receiving_messages, args=(client, private_key))
-    
-    send_thread.daemon = True
-    receive_thread.daemon = True
-    
-    send_thread.start()
-    receive_thread.start()
+
 
     try:
         send_thread.join()
