@@ -1,4 +1,5 @@
 from colorama import Style, Fore
+from phantom_chat import get_local_ip
 import rsa
 import socket
 import threading
@@ -11,7 +12,7 @@ class P2P:
 
     # IP ADDRESS
     port = 9999
-    ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE} {Style.RESET_ALL}")
+    ip_address = input(f"{Fore.BLUE}[INFO]{Style.RESET_ALL}Your local IP is =>{Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
     while True:
         choiceP2P = input("Choose the mod: Host [1] or Client [2]: ")
         if choiceP2P in ["1", "2"]:
