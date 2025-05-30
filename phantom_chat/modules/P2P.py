@@ -3,8 +3,6 @@ from phantom_chat.utils import get_local_ip
 import rsa
 import socket
 import threading
-import sys
-import signal
 
 class P2P:
     def __init__(self):
@@ -13,23 +11,16 @@ class P2P:
         self.public_partner = None
         self.running = True
         
-        # Configura il gestore per Ctrl+C
-        signal.signal(signal.SIGINT, self.handle_keyboard_interrupt)
         self.p2p_manager()
-
-    def handle_keyboard_interrupt(self, signum, frame):
-        print(f"\n{Fore.YELLOW}[!] Closing connection...{Style.RESET_ALL}")
-        self.cleanup()
 
     def p2p_manager(self):
         print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Your local IP is: {Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
         
-        # Configurazione porta
         default_port = 9999
         try:
             port = int(input(f"{Fore.GREEN}[?] Insert port (default: {default_port}): {Style.RESET_ALL}") or default_port)
         except ValueError:
-            print(f"{Fore.RED}[X] Invalid port, using default {default_port}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[X] Invalid port {default_port}{Style.RESET_ALL}")
             port = default_port
 
         while True:
@@ -62,7 +53,7 @@ class P2P:
             client, addr = server.accept()
             print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection from {Fore.CYAN}{addr[0]}{Style.RESET_ALL}")
             
-            # Scambio chiavi
+            # KEYS CHANGE
             client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
             partner_key = rsa.PublicKey.load_pkcs1(client.recv(1024), "PEM")
             
@@ -75,7 +66,7 @@ class P2P:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client.connect((ip, port))
-            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connected to {Fore.CYAN}{ip}:{port}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} Connected to {Fore.BLUE}{ip}:{port}{Style.RESET_ALL}")
             
             # Scambio chiavi
             client.send(rsa.PublicKey.save_pkcs1(self.public_key, "PEM"))
@@ -140,13 +131,3 @@ class P2P:
                 pass
         print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed{Style.RESET_ALL}")
         sys.exit(0)
-
-if __name__ == "__main__":
-    try:
-        p2p = P2P()
-    except KeyboardInterrupt:
-        print(f"\n{Fore.RED}[X] Program terminated by user{Style.RESET_ALL}")
-        sys.exit(0)
-    except Exception as e:
-        print(f"{Fore.RED}[X] Unexpected error: {e}{Style.RESET_ALL}")
-        sys.exit(1)
