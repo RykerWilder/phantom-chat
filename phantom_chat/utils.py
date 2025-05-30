@@ -1,5 +1,6 @@
 import socket
 from colorama import Style, Fore
+import sys
 
 def get_local_ip():
     try:
@@ -11,6 +12,10 @@ def get_local_ip():
     except Exception:
         return "127.0.0.1"  # Fallback a localhost
         
+
+def exit(signum, frame):
+    print(f"\n{Fore.RED}[X] Phantom Chat closed{Style.RESET_ALL}")
+    sys.exit(0)
 
 def print_welcome_message():
     print(r""" 

@@ -1,13 +1,8 @@
 from colorama import Fore, Style
 from phantom_chat.modules import P2P
-from phantom_chat.utils import print_welcome_message
+from phantom_chat.utils import print_welcome_message, exit
 import threading
 import signal
-import sys
-
-def exit(signum, frame):
-    print(f"\n{Fore.RED}[X] Phantom Chat closed{Style.RESET_ALL}")
-    sys.exit(0)
 
 def main():
     # ctrl+c handler
