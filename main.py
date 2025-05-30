@@ -4,17 +4,16 @@ import threading
 
 def main():
 
-    print("""
-        [1] P2P
-        [2] Public host
+    print(f"""
+        {Fore.BLUE}[1]{Style.RESET_ALL} P2P
+        {Fore.BLUE}[2]{Style.RESET_ALL} Public host
     """)
 
     choice = input(f"{Fore.GREEN}[?]Select your choice => {Style.RESET_ALL}")
 
     if choice == "1":
-        print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose P2P. You can be a host or a client only in your network")
+        print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose P2P. You can be a host or a client only in your network'")
         P2P().P2P_manager()
-
     elif choice == "2":
         print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose public host.")
     else: 

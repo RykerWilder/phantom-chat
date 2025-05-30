@@ -15,7 +15,7 @@ class P2P:
         self.p2p_manager()
 
     def p2p_manager(self):
-        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Your local IP is: {Fore.GREEN}{get_local_ip()}{Style.RESET_ALL}")
+        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Your local IP is: {Fore.BLUE}{get_local_ip()}{Style.RESET_ALL}")
         
         # Configurazione porta
         default_port = 9999
