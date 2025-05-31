@@ -13,6 +13,20 @@ def get_local_ip():
         return "127.0.0.1"  # Fallback a localhost
         
 
+def cleanup(instance):
+    if not instance.running:
+        return
+            
+    instance.running = False
+    if instance.client:
+        try:
+            instance.client.shutdown(socket.SHUT_RDWR)
+            instance.client.close()
+        except:
+            pass
+    print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed{Style.RESET_ALL}")
+    sys.exit(0)
+
 def exit(signum, frame):
     print(f"\n{Fore.RED}[X] Phantom Chat closed{Style.RESET_ALL}")
     sys.exit(0)

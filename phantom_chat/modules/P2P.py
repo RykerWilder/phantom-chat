@@ -1,5 +1,5 @@
 from colorama import Style, Fore, init
-from phantom_chat.utils import get_local_ip
+from phantom_chat.utils import get_local_ip, cleanup
 import rsa
 import socket
 import threading
@@ -101,7 +101,7 @@ class P2P:
             if self.running:
                 print(f"{Fore.RED}[X] Send error: {e}{Style.RESET_ALL}")
         finally:
-            self.cleanup()
+            cleanup(self)
 
     def receive_messages(self):
         try:
@@ -116,18 +116,4 @@ class P2P:
             if self.running:
                 print(f"{Fore.RED}[X] Receive error: {e}{Style.RESET_ALL}")
         finally:
-            self.cleanup()
-
-    def cleanup(self):
-        if not self.running:
-            return
-            
-        self.running = False
-        if self.client:
-            try:
-                self.client.shutdown(socket.SHUT_RDWR)
-                self.client.close()
-            except:
-                pass
-        print(f"\n{Fore.BLUE}[INFO]{Style.RESET_ALL} Connection closed{Style.RESET_ALL}")
-        sys.exit(0)
+            cleanup(self)
