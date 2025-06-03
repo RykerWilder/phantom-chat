@@ -11,8 +11,8 @@ def main():
     print_welcome_message()
 
     print(f"""
-        [{Fore.BLUE}1{Style.RESET_ALL}] P2P
-        [{Fore.BLUE}2{Style.RESET_ALL}] Public host
+        [{Fore.BLUE}1{Style.RESET_ALL}] P2P pattern (recommended)
+        [{Fore.BLUE}2{Style.RESET_ALL}] Server - Client pattern
     """)
 
     choice = input(f"{Fore.GREEN}[?] Select your choice => {Style.RESET_ALL}")
