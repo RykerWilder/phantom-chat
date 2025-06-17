@@ -18,13 +18,13 @@ class P2P:
         
         default_port = 9999
         try:
-            port = int(input(f"{Fore.GREEN}[?] Insert port (default: {default_port}): {Style.RESET_ALL}") or default_port)
+            port = int(input(f"{Fore.GREEN}[?]{Style.RESET_ALL} Insert port (default: {default_port}) => ") or default_port)
         except ValueError:
             print(f"{Fore.RED}[X] Invalid port {default_port}{Style.RESET_ALL}")
             port = default_port
 
         while True:
-            choice = input(f"{Fore.GREEN}[?] Choose mode - Host [1] or Client [2]: {Style.RESET_ALL}")
+            choice = input(f"{Fore.GREEN}[?]{Style.RESET_ALL} Choose mode - Host [1] or Client [2] => ")
             if choice in ("1", "2"):
                 break
             print(f"{Fore.RED}[X] Invalid choice{Style.RESET_ALL}")
