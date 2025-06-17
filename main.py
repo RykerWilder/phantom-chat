@@ -24,7 +24,7 @@ def main():
         P2P().P2P_manager()
     elif choice == "2":
         print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose public host.")
-    else: 
+    else:
         print(f"{Fore.RED}[X] Invalid choice.{Style.RESET_ALL}")
 
 if __name__ == "__main__":

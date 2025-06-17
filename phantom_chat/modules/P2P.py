@@ -93,7 +93,12 @@ class P2P:
     def send_messages(self):
         try:
             while self.running:
-                msg = input()
+                msg = input().strip()
+
+                if not msg:
+                    print(f"{Fore.RED}[!] Message can't be empty!{Style.RESET_ALL}")
+                    continue
+
                 encrypted = rsa.encrypt(msg.encode(), self.public_partner)
                 self.client.send(encrypted)
                 print(f"{Fore.YELLOW}You:{Style.RESET_ALL} {msg}")
