@@ -1,7 +1,6 @@
-# Encrypted Chat with RSA
+# Phantom Chat
 
-This is a peer-to-peer (P2P) chat application that uses 3072-bit RSA encryption to secure messages exchanged between two users. Communication occurs via TCP/IP sockets, ensuring that messages are end-to-end encrypted. Upon connection initiation, public keys are automatically exchanged. Support for simultaneous two-way communication via threading.
-
+This is an RSA encrypted chat with 3072-bit keys where you can choose whether to start a P2P (peer to peer) chat, in case you are on the same subnet, or create a client-server pattern if you want to talk and you are in two different subnets.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
 ![phantom-chat](./phantom_chat/assets/phantom-chat.png)
