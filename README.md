@@ -4,7 +4,7 @@ This is a peer-to-peer (P2P) chat application that uses 3072-bit RSA encryption 
 
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
-![sentinel](./phantom-chat/assets/phantom-chat.png)
+![phantom-chat](./phantom_chat/assets/phantom-chat.png)
 
 ---
 
