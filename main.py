@@ -15,7 +15,7 @@ def main():
         [{Fore.BLUE}2{Style.RESET_ALL}] Server - Client pattern
     """)
 
-    choice = input(f"{Fore.GREEN}[?] Select your choice => {Style.RESET_ALL}")
+    choice = input(f"{Fore.GREEN}[?] {Style.RESET_ALL} Select your choice =>")
 
     if choice == "1":
         print(f"{Fore.BLUE}[INFO]{Style.RESET_ALL} You choose P2P. You can be a host or a client only in your network.")
